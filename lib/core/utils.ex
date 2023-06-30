@@ -86,8 +86,6 @@ defmodule Routeros.Utils do
   end
 
   defp part(list) do
-    a = list
-
     if :erlang.length(list) == 32 do
       part(list, [])
     else

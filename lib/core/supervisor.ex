@@ -5,7 +5,6 @@ defmodule Routeros.Supervisor do
   @registered_name RouterosSupervisor
 
   def start_link do
-    IO.puts("dasdsad aqui")
     Supervisor.start_link(__MODULE__, [])
   end
 

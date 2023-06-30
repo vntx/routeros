@@ -9,7 +9,7 @@ defmodule Routeros.Command do
 
     case b do
       [%{}] ->
-        IO.puts("\n TRYE:#{inspect(b)}")
+        IO.puts("\n try:#{inspect(b)}")
         [b1] = b
 
         case Map.has_key?(b1, :message) do
@@ -18,7 +18,7 @@ defmodule Routeros.Command do
         end
 
       _ ->
-        IO.puts("\n RESP:#{inspect(b)}")
+        IO.puts("\n resp:#{inspect(b)}")
         b
     end
   end

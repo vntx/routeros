@@ -5,16 +5,6 @@ defmodule Routeros do
 
   use Application
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Routeros.hello
-      :world
-
-  """
-
   def start(_type, _args) do
     # import Supervisor.Spec
     # children = [

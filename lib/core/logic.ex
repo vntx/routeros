@@ -45,7 +45,7 @@ defmodule Routeros.Logic do
 
   def count_hash(password, salt) do
     bin_md5 = Utils.hex_to_binary(salt)
-    a = crypto(password, bin_md5)
+    crypto(password, bin_md5)
   end
 
   def form_login_sentence(login, hash) do
@@ -55,7 +55,7 @@ defmodule Routeros.Logic do
   end
 
   def send_command(pid, socket, list) do
-    a = Api.write_sentence(socket, list)
+    Api.write_sentence(socket, list)
     Api.read_block(socket)
   end
 end

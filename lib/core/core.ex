@@ -12,22 +12,22 @@ defmodule Routeros.Core do
     defstruct login: false, pid: nil, socket: nil, port: nil, resp: nil, request_count: 0
   end
 
-  @config Application.get_env(:routeros, :router)
   @timeout 5000
+  @config Application.get_env(:routeros, :router)
   # Client
 
-  def start_link(tentativa \\ 0) do
+  def start_link(count \\ 0) do
     p = GenServer.start_link(__MODULE__, @config, [{:name, __MODULE__}])
 
     case p do
       {:error, _} ->
         cond do
-          tentativa < 10 ->
-            IO.puts("TENTATIVA DE CONEXÃO COM O MIKROTIK \##{tentativa}")
-            start_link(tentativa + 1)
+          count < 10 ->
+            IO.puts("connecting to device attempt \##{count}")
+            start_link(count + 1)
 
           true ->
-            IO.puts("NÃO FOI POSSIVEL CONECTAR AO MIKROTIK ")
+            IO.puts("connection to device failed ")
         end
 
       {:ok, _} ->
@@ -45,7 +45,7 @@ defmodule Routeros.Core do
         IO.puts("PID #{inspect(self())} ")
         {:ok, %State{login: true, pid: self(), socket: port}}
 
-      a ->
+      _ ->
         IO.puts("FAIL #{inspect(self())}")
         {:stop, :fail}
     end
@@ -53,7 +53,7 @@ defmodule Routeros.Core do
 
   # Server (callbacks)
   def handle_call({:command, list}, _from, state) do
-    Logger.info("Fazendo a chamada #{inspect(list)}")
+    Logger.info("sending call #{inspect(list)}")
 
     if Map.has_key?(state, :socket) do
       e = Routeros.Logic.send_command(self(), state.socket, list)
@@ -71,15 +71,15 @@ defmodule Routeros.Core do
   end
 
   def handle_call(:receive, _from, state) do
-    IO.puts("ins #{inspect(state)}")
+    IO.puts("#{inspect(state)}")
     reply = Routeros.Api.read_block(state.socket)
     {:reply, reply, state}
   end
 
-  def handle_call(request, from, state) do
-    # Call the default implementation from GenSeerver
-    super(request, from, state)
-  end
+  # def handle_call(request, from, state) do
+  #   # Call the default implementation from GenSeerver
+  #   super(request, from, state)
+  # end
 
   def handle_cast(:resp, state) do
     {:noreply, state}
@@ -89,15 +89,11 @@ defmodule Routeros.Core do
     {:stop, :normal, state}
   end
 
-  def handle_cast(request, state) do
-    super(request, state)
-  end
+  # def handle_info(_request, state) do
+  #   {:noreply, state}
+  # end
 
-  def handle_info(request, state) do
-    {:noreply, state}
-  end
-
-  def code_change(old_vsn, state, extra) do
+  def code_change(_old_vsn, state, _extra) do
     {:ok, state}
   end
 
